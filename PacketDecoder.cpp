@@ -1,0 +1,67 @@
+#include "PacketDecoder.h"
+
+PacketDecoder::PacketDecoder(int sock_fd) : sock_fd(sock_fd) {};
+
+void PacketDecoder::DecodePackets() {
+    std::array<uint8_t, 65536> buffer;
+
+    struct sockaddr_ll src_addr;
+    socklen_t addr_len = sizeof(src_addr);
+
+    while (true) {
+        ssize_t bytes_recieved = recvfrom(
+        sock_fd, 
+        buffer.data(), 
+        buffer.size(), 
+        0, 
+        reinterpret_cast<struct sockaddr *>(&src_addr), 
+        &addr_len);
+
+        if (bytes_recieved == -1) {
+            close(sock_fd);
+            throw std::system_error(errno, std::generic_category(), "recvfrom failed while trying to decode packets");
+        }
+
+        if(static_cast<size_t>(bytes_recieved) < sizeof(struct ethhdr)) {
+            close(sock_fd);
+            throw std::system_error(errno, std::generic_category(), "not enough bytes recieved while trying to decode packets");
+        }
+
+        /* buf[0..13]: Ethernet header
+        buf[0..5]:  destination MAC
+        buf[6..11]: source MAC
+        buf[12..13]: EtherType (0x0800=IPv4, 0x0806=ARP, 0x86DD=IPv6)
+        buf[14..n-1]: payload */
+
+        struct ethhdr eth{};
+        std::memcpy(&eth, buffer.data(), sizeof(eth));
+
+        std::cout << std::hex << std::setfill('0');
+        std::cout << std::endl << "------------------------------------" << std::endl;
+        std::cout << "Source: ";
+        for (int i = 0; i < sizeof(eth.h_source); i++) {
+            std::cout << std::hex << std::setw(2) << static_cast<int>(eth.h_source[i]);
+
+            if (i != sizeof(eth.h_source) - 1) {
+                std::cout << ":";
+            }
+        }
+
+        std::cout << std::endl;
+
+        std::cout << "Destination: ";
+        for (int i = 0; i < sizeof(eth.h_dest); i++) {
+            std::cout << std::hex << std::setw(2) << static_cast<int>(eth.h_dest[i]);
+
+            if (i != sizeof(eth.h_dest) - 1) {
+                std::cout << ":";
+            }
+        }
+
+        std::cout << std::endl;
+
+        std::cout << "Protocol:";
+        std::cout << std::hex << std::setw(4) << ntohs(eth.h_proto) << std::endl;
+        std::cout << "------------------------------------" << std::endl << std::endl;
+    }
+}

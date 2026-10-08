@@ -1,4 +1,5 @@
 #include "PacketCapture.h"
+#include "PacketDecoder.h"
 
 PacketCapture::PacketCapture(const std::string& interface) : interface(interface) {
 };
@@ -42,10 +43,13 @@ void PacketCapture::StartCapture() {
     setsockopt(sock_fd, SOL_PACKET, PACKET_ADD_MEMBERSHIP, &mreq, sizeof(mreq));
 
     std::cout << "Succesfully started packet capturing" << std::endl;
+
+    PacketDecoder decoder(sock_fd);
+    decoder.DecodePackets();
 };
 
 void PacketCapture::StopCapture() {
     close(sock_fd);
-    
+
     std::cout << "Stopping capture..." << std::endl;
 }
