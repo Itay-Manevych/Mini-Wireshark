@@ -5,9 +5,9 @@
 int main() 
 {
     PacketCapture capture("eth0");
-    std::cout << "Hello";
-    while (true) {
-        sleep(1);
-    }
+    capture.StartCapture();
+    std::cout << "Hello" << std::endl;
+    sleep(3);
+    capture.StopCapture();
     return 0;
 }

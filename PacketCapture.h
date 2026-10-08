@@ -5,6 +5,10 @@
 #include <net/if.h>
 #include <arpa/inet.h>
 #include <string>
+#include <system_error>
+#include <errno.h>
+#include <unistd.h>
+#include <iostream>
 
 class PacketCapture {
     public:
