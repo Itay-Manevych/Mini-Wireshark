@@ -8,8 +8,10 @@
 #include <unistd.h>
 #include <iostream>
 #include <array>
+#include <vector>
 #include <cstring>
 #include <iomanip>
+#include "EthernetPacket.h"
 
 class PacketDecoder {
     public:

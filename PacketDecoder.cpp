@@ -35,33 +35,11 @@ void PacketDecoder::DecodePackets() {
 
         struct ethhdr eth{};
         std::memcpy(&eth, buffer.data(), sizeof(eth));
-
-        std::cout << std::hex << std::setfill('0');
-        std::cout << std::endl << "------------------------------------" << std::endl;
-        std::cout << "Source: ";
-        for (int i = 0; i < sizeof(eth.h_source); i++) {
-            std::cout << std::hex << std::setw(2) << static_cast<int>(eth.h_source[i]);
-
-            if (i != sizeof(eth.h_source) - 1) {
-                std::cout << ":";
-            }
-        }
-
-        std::cout << std::endl;
-
-        std::cout << "Destination: ";
-        for (int i = 0; i < sizeof(eth.h_dest); i++) {
-            std::cout << std::hex << std::setw(2) << static_cast<int>(eth.h_dest[i]);
-
-            if (i != sizeof(eth.h_dest) - 1) {
-                std::cout << ":";
-            }
-        }
-
-        std::cout << std::endl;
-
-        std::cout << "Protocol:";
-        std::cout << std::hex << std::setw(4) << ntohs(eth.h_proto) << std::endl;
-        std::cout << "------------------------------------" << std::endl << std::endl;
+        std::vector<uint8_t> payload(
+            buffer.begin() + sizeof(eth),
+            buffer.begin() + bytes_recieved
+        );
+        EthernetPacket packet(eth.h_source, eth.h_dest, eth.h_proto, payload);
+        packet.PrintPacketInformation(std::cout);
     }
 }
