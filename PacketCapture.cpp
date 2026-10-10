@@ -3,6 +3,12 @@
 
 PacketCapture::PacketCapture(const std::string& interface) : interface(interface), is_capturing(false) {};
 
+PacketCapture::~PacketCapture() {
+    if (sock_fd != -1) {
+        close(sock_fd);
+    }
+}
+
 int PacketCapture::CreateAndBindSocket() {
     sock_fd = socket(
         AF_PACKET, 
@@ -80,29 +86,17 @@ void PacketCapture::RecievePackets() {
             &packet_addr_len
         );
 
-
         if (bytes_recieved == -1) {
             close(sock_fd);
 
             throw std::system_error(
                 errno, 
                 std::generic_category(), 
-                "recvfrom failed while trying to decode packets"
+                "recvfrom failed when trying to receive packets"
             );
         }
 
-        if(static_cast<size_t>(bytes_recieved) < sizeof(struct ethhdr)) {
-            close(sock_fd);
-            throw std::system_error(
-                errno, 
-                std::generic_category(), 
-                "not enough bytes recieved while trying to decode packets"
-            );
-        }
-        
-        PacketDecoder decoder(sock_fd);
-    
-        decoder.DecodePackets();
+        PacketDecoder::DecodePackets(buffer, static_cast<size_t>(bytes_recieved));
     }
 }
 
@@ -118,6 +112,8 @@ void PacketCapture::StartCapture() {
 
 void PacketCapture::StopCapture() {
     std::cout << "Stopping capture..." << std::endl;
+
     is_capturing = false;
+
     close(sock_fd);
 }

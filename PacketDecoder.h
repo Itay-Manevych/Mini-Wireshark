@@ -11,12 +11,10 @@
 #include <vector>
 #include <cstring>
 #include <iomanip>
+#include <stdexcept>
 #include "EthernetPacket.h"
 
 class PacketDecoder {
     public:
-        PacketDecoder(int sock_fd);
-        void DecodePackets();
-    private:
-        int sock_fd;
+        static void DecodePackets(const std::array<uint8_t, 65536>& buffer, size_t bytes_recieved);
 };
