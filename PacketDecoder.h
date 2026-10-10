@@ -17,4 +17,6 @@
 class PacketDecoder {
     public:
         static void DecodePackets(const std::array<uint8_t, 65536>& buffer, size_t bytes_recieved);
+    private:
+        void HandlePacketType();
 };

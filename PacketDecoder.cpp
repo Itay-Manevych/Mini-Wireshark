@@ -16,9 +16,37 @@ void PacketDecoder::DecodePackets(const std::array<uint8_t, 65536>& buffer, size
     buf[14..n-1]: payload */
 
     struct ethhdr eth{};
-    std::memcpy(&eth, buffer.data(), sizeof(eth));
+    std::memcpy(
+        &eth, 
+        buffer.data(), 
+        sizeof(eth)
+    );
+
     std::vector<uint8_t> payload(
         buffer.begin() + sizeof(eth),
         buffer.begin() + bytes_recieved
     );
+
+}
+
+void PacketDecoder::HandlePacketType(const struct ethhdr& eth, const std::vector<uint8_t>& payload) {
+    // ETH_P_IP
+    // ETH_P_ARP
+    // ETH_P_IPV6
+    switch (nthos(eth.h_proto)) {
+        case ETH_P_IP: {
+            // Handle IPV4 packet!
+            break;
+        }
+        
+        case ETH_P_IPV6: {
+            // Handle IPV6 packet!
+            break;
+        }
+
+        case ETH_P_ARP: {
+            // Handle ARP packet!
+            break;
+        }
+    }
 }
