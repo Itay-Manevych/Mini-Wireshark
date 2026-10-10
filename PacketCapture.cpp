@@ -96,6 +96,10 @@ void PacketCapture::RecievePackets() {
             );
         }
 
+        if(!is_capturing) {
+            break; // drop packet if StopCapture() has been called
+        }
+
         PacketDecoder::DecodePackets(buffer, static_cast<size_t>(bytes_recieved));
     }
 }
@@ -107,13 +111,19 @@ void PacketCapture::StartCapture() {
 
     std::cout << "Succesfully started packet capturing" << std::endl;
 
-    RecievePackets();
+    capture_thread = std::thread([this] () {
+        RecievePackets();
+    });
 }
 
 void PacketCapture::StopCapture() {
     std::cout << "Stopping capture..." << std::endl;
 
     is_capturing = false;
+
+    if (capture_thread.joinable()) {
+        capture_thread.join();
+    }
 
     close(sock_fd);
 }

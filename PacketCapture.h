@@ -10,6 +10,7 @@
 #include <unistd.h>
 #include <iostream>
 #include <atomic>
+#include <thread>
 
 class PacketCapture {
     public:
@@ -17,11 +18,12 @@ class PacketCapture {
         ~PacketCapture();
         void StartCapture();
         void StopCapture();
-        
+
     private:
         int sock_fd;
-        std::atomic<bool> is_capturing;
         std::string interface;
+        std::atomic<bool> is_capturing;
+        std::thread capture_thread;
 
         int CreateAndBindSocket();
         void RecievePackets();
