@@ -33,7 +33,7 @@ void PacketDecoder::HandlePacketType(const struct ethhdr& eth, const std::vector
     // ETH_P_IP
     // ETH_P_ARP
     // ETH_P_IPV6
-    switch (nthos(eth.h_proto)) {
+    switch (ntohs(eth.h_proto)) {
         case ETH_P_IP: {
             // Handle IPV4 packet!
             break;
