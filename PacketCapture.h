@@ -14,8 +14,10 @@
 class PacketCapture {
     public:
         PacketCapture(const std::string& interface);
+        ~PacketCapture();
         void StartCapture();
         void StopCapture();
+        
     private:
         int sock_fd;
         std::atomic<bool> is_capturing;
