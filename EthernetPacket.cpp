@@ -32,7 +32,17 @@ void EthernetPacket::PrintPacketInformation(std::ostream& os) {
 
     os << std::endl;
 
-    os << "Protocol:";
-    os << std::hex << std::setw(4) << ntohs(next_protocol) << std::endl;
+    os << "Next Protocol:";
+    if (ntohs(next_protocol) == ETH_P_IP) {
+        os << " IPV4 ";
+    }
+    if (ntohs(next_protocol) == ETH_P_ARP) {
+        os << " ARP ";
+    }
+    if (ntohs(next_protocol) == ETH_P_IPV6) {
+        os << " IPV6 ";
+    }
+    os << "(0x" << std::hex << std::setw(4) << ntohs(next_protocol) << ")" << std::endl;
+
     os << "------------------------------------" << std::endl << std::endl;
 };

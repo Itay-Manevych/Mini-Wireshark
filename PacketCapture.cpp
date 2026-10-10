@@ -1,37 +1,50 @@
 #include "PacketCapture.h"
 #include "PacketDecoder.h"
 
-PacketCapture::PacketCapture(const std::string& interface) : interface(interface) {
-};
+PacketCapture::PacketCapture(const std::string& interface) : interface(interface), is_capturing(false) {};
 
-void PacketCapture::StartCapture() {
-    sock_fd = socket(AF_PACKET, SOCK_RAW, htons(ETH_P_ALL));
+int PacketCapture::CreateAndBindSocket() {
+    sock_fd = socket(
+        AF_PACKET, 
+        SOCK_RAW, 
+        htons(ETH_P_ALL)
+    );
 
     if (sock_fd == -1) {
-        throw std::system_error(errno, std::generic_category(), "failed to open a socket");
+        throw std::system_error(
+            errno, 
+            std::generic_category(), 
+            "failed to open a socket"
+        );
     }
-
-    this->interface = interface;
 
     unsigned int index = if_nametoindex(this->interface.c_str()); // interface's index (each interface has an identifiable index)
     if (index == 0) {
         close(sock_fd);
 
-        throw std::system_error(errno, std::generic_category(), "failed to find interface name");
+        throw std::system_error(
+            errno, 
+            std::generic_category(), 
+            "failed to find interface name"
+        );
     } 
 
     int if_index = static_cast<int>(index);
-    struct sockaddr_ll sll = { // link layer socket address
+    struct sockaddr_ll bind_addr = { // link layer socket address
         .sll_family   = AF_PACKET,
         .sll_protocol = htons(ETH_P_ALL),
         .sll_ifindex  = if_index,
     };
 
-    int res = bind(sock_fd, reinterpret_cast<struct sockaddr *>(&sll), sizeof(sll));
+    int res = bind(sock_fd, reinterpret_cast<struct sockaddr *>(&bind_addr), sizeof(bind_addr));
     if (res == -1) {
         close(sock_fd);
 
-        throw std::system_error(errno, std::generic_category(), "failed to bind the socket");
+        throw std::system_error(
+            errno, 
+            std::generic_category(), 
+            "failed to bind the socket"
+        );
     }
 
     // set promsicious mode
@@ -40,16 +53,71 @@ void PacketCapture::StartCapture() {
         .mr_type    = PACKET_MR_PROMISC,
     };
 
-    setsockopt(sock_fd, SOL_PACKET, PACKET_ADD_MEMBERSHIP, &mreq, sizeof(mreq));
+    setsockopt(
+        sock_fd, 
+        SOL_PACKET, 
+        PACKET_ADD_MEMBERSHIP, 
+        &mreq, 
+        sizeof(mreq)
+    );
+
+    return sock_fd;
+}
+
+void PacketCapture::RecievePackets() {
+    std::array<uint8_t, 65536> buffer;
+
+    struct sockaddr_ll packet_addr;
+    socklen_t packet_addr_len = sizeof(packet_addr);
+
+    while (is_capturing) {
+        ssize_t bytes_recieved = recvfrom(
+            sock_fd, 
+            buffer.data(), 
+            buffer.size(), 
+            0, 
+            reinterpret_cast<struct sockaddr *>(&packet_addr), 
+            &packet_addr_len
+        );
+
+
+        if (bytes_recieved == -1) {
+            close(sock_fd);
+
+            throw std::system_error(
+                errno, 
+                std::generic_category(), 
+                "recvfrom failed while trying to decode packets"
+            );
+        }
+
+        if(static_cast<size_t>(bytes_recieved) < sizeof(struct ethhdr)) {
+            close(sock_fd);
+            throw std::system_error(
+                errno, 
+                std::generic_category(), 
+                "not enough bytes recieved while trying to decode packets"
+            );
+        }
+        
+        PacketDecoder decoder(sock_fd);
+    
+        decoder.DecodePackets();
+    }
+}
+
+void PacketCapture::StartCapture() {
+    sock_fd = CreateAndBindSocket();
+
+    is_capturing = true;
 
     std::cout << "Succesfully started packet capturing" << std::endl;
 
-    PacketDecoder decoder(sock_fd);
-    decoder.DecodePackets();
-};
+    RecievePackets();
+}
 
 void PacketCapture::StopCapture() {
-    close(sock_fd);
-
     std::cout << "Stopping capture..." << std::endl;
+    is_capturing = false;
+    close(sock_fd);
 }

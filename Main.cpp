@@ -1,11 +1,17 @@
 #include <iostream>
-#include <unistd.h>
+#include <thread>
 #include "PacketCapture.h"
 
-int main() 
-{
-    PacketCapture capture("eth0");
-    capture.StartCapture();
-    std::cout << "Hello" << std::endl;
-    return 0;
+int main() {
+    PacketCapture packet("eth0");
+
+    std::thread captureThread([&packet]() {
+        packet.StartCapture();
+    });
+
+    std::cout << "Press Any Key to stop capturing..." << std::endl;
+    std::cin.get();
+
+    packet.StopCapture();
+    captureThread.join();
 }

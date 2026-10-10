@@ -9,6 +9,7 @@
 #include <errno.h>
 #include <unistd.h>
 #include <iostream>
+#include <atomic>
 
 class PacketCapture {
     public:
@@ -17,5 +18,9 @@ class PacketCapture {
         void StopCapture();
     private:
         int sock_fd;
+        std::atomic<bool> is_capturing;
         std::string interface;
+
+        int CreateAndBindSocket();
+        void RecievePackets();
 };
