@@ -4,9 +4,7 @@
 PacketCapture::PacketCapture(const std::string& interface) : interface(interface), is_capturing(false) {};
 
 PacketCapture::~PacketCapture() {
-    if (sock_fd != -1) {
-        close(sock_fd);
-    }
+    StopCapture();
 }
 
 int PacketCapture::CreateAndBindSocket() {
@@ -67,6 +65,19 @@ int PacketCapture::CreateAndBindSocket() {
         sizeof(mreq)
     );
 
+    // set timeout
+    struct timeval timeout{};
+    timeout.tv_sec = 30;   // 30 seconds
+    timeout.tv_usec = 0;  // 0 microseconds
+
+    setsockopt(
+        sock_fd, 
+        SOL_SOCKET, 
+        SO_RCVTIMEO,
+        &timeout, 
+        sizeof(timeout)
+    );
+
     return sock_fd;
 }
 
@@ -87,7 +98,15 @@ void PacketCapture::RecievePackets() {
         );
 
         if (bytes_recieved == -1) {
-            close(sock_fd);
+            if (errno == EINTR) { // interrupted by a syscall
+                continue;
+            }
+
+            if (errno == EAGAIN || errno == EWOULDBLOCK) {
+                std::cout << "No packets received for 30 seconds. Stopping capture." << std::endl;
+                is_capturing = false;
+                break;
+            }
 
             throw std::system_error(
                 errno, 
@@ -117,7 +136,9 @@ void PacketCapture::StartCapture() {
 }
 
 void PacketCapture::StopCapture() {
-    std::cout << "Stopping capture..." << std::endl;
+    if (is_capturing) {
+        std::cout << "Stopping capture..." << std::endl;
+    }
 
     is_capturing = false;
 
@@ -125,5 +146,8 @@ void PacketCapture::StopCapture() {
         capture_thread.join();
     }
 
-    close(sock_fd);
+    if (sock_fd != -1) {
+        close(sock_fd);
+        sock_fd = -1;
+    }
 }

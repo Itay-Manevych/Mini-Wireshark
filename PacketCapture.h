@@ -11,6 +11,10 @@
 #include <iostream>
 #include <atomic>
 #include <thread>
+#include <sys/time.h>
+#include <sys/socket.h>
+#include <cerrno>
+#include <system_error>
 
 class PacketCapture {
     public:
