@@ -3,7 +3,7 @@
 EthernetPacket::EthernetPacket(const uint8_t* source, const uint8_t* destination, const uint16_t next_protocol, const std::vector<uint8_t>& payload): next_protocol(next_protocol) ,payload(payload) {
     std::memcpy(this->source.data(), source, ETH_ALEN);
     std::memcpy(this->destination.data(), destination, ETH_ALEN);
-};
+}
 
 void EthernetPacket::PrintPacketInformation(std::ostream& os) {
     os << std::hex << std::setfill('0');
@@ -45,4 +45,4 @@ void EthernetPacket::PrintPacketInformation(std::ostream& os) {
     os << "(0x" << std::hex << std::setw(4) << ntohs(next_protocol) << ")" << std::endl;
 
     os << "------------------------------------" << std::endl << std::endl;
-};
+}
