@@ -5,7 +5,7 @@ EthernetLayer::EthernetLayer(const uint8_t* source, const uint8_t* destination, 
     std::memcpy(this->destination.data(), destination, ETH_ALEN);
 }
 
-void EthernetLayer::PrintInformation(std::ostream& os) {
+void EthernetLayer::PrintInformation(std::ostream& os) const {
     os << std::hex << std::setfill('0');
 
     os << std::endl << "------------------------------------" << std::endl;

@@ -27,6 +27,13 @@ void PacketDecoder::DecodePackets(const std::array<uint8_t, 65536>& buffer, size
         buffer.begin() + bytes_recieved
     );
 
+    std::cout << "INFORMATION PAYLOAD: ";
+    for (const auto& byte : payload) {
+        std::cout << std::hex << std::setw(2) << static_cast<int>(byte) << " ";
+    }
+
+    std::cout << std::endl;
+
 }
 
 void PacketDecoder::HandlePacketType(const struct ethhdr& eth, const std::vector<uint8_t>& payload) {

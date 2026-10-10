@@ -3,6 +3,6 @@
 
 class Packet {
     public:
-        virtual ~Packet();
-        virtual const void PrintInformation() = 0;
+        virtual ~Packet() = default;
+        virtual void PrintInformation(std::ostream& os) const = 0;
 };

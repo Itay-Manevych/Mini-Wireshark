@@ -9,7 +9,8 @@ int main() {
         packet.StartCapture();
     });
 
-    std::cout << "Press Any Key to stop capturing..." << std::endl;
+    sleep(1);
+    std::cout << "Press Enter to stop capturing..." << std::endl;
     std::cin.get();
 
     packet.StopCapture();
