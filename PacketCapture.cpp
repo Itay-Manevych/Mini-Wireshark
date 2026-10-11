@@ -119,7 +119,11 @@ void PacketCapture::RecievePackets() {
             break; // drop packet if StopCapture() has been called
         }
 
-        PacketDecoder::DecodePackets(buffer, static_cast<size_t>(bytes_recieved));
+        std::optional<CapturedPacket> captured_packet = PacketDecoder::DecodePackets(buffer, static_cast<size_t>(bytes_recieved));
+        if (captured_packet.has_value()) {
+            captured_packets.push_back(std::move(*captured_packet));
+            captured_packets.back().PrintInformation(std::cout);
+        }
     }
 }
 

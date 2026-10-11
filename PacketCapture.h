@@ -15,6 +15,7 @@
 #include <sys/socket.h>
 #include <cerrno>
 #include <system_error>
+#include "CapturedPacket.h"
 
 class PacketCapture {
     public:
@@ -28,6 +29,7 @@ class PacketCapture {
         std::string interface;
         std::atomic<bool> is_capturing;
         std::thread capture_thread;
+        std::vector<CapturedPacket> captured_packets;
 
         int CreateAndBindSocket();
         void RecievePackets();

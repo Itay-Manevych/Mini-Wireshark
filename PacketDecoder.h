@@ -12,12 +12,15 @@
 #include <cstring>
 #include <iomanip>
 #include <stdexcept>
+#include <memory>
+#include <optional>
 #include "EthernetLayer.h"
 #include "IPv4Layer.h"
+#include "CapturedPacket.h"
 
 class PacketDecoder {
     public:
-        static void DecodePackets(const std::array<uint8_t, 65536>& buffer, size_t bytes_recieved);
+        static std::optional<CapturedPacket> DecodePackets(const std::array<uint8_t, 65536>& buffer, size_t bytes_recieved);
     private:
-        static void HandlePacketType(const struct ethhdr& eth, const std::vector<uint8_t>& payload);
+        static std::optional<CapturedPacket> HandlePacketType(const struct ethhdr& eth, const std::vector<uint8_t>& payload);
 };

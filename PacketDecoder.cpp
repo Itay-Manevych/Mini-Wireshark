@@ -1,12 +1,12 @@
 #include "PacketDecoder.h"
 
-void PacketDecoder::DecodePackets(const std::array<uint8_t, 65536>& buffer, size_t bytes_recieved) {
+std::optional<CapturedPacket> PacketDecoder::DecodePackets(const std::array<uint8_t, 65536>& buffer, size_t bytes_recieved) {
     if (bytes_recieved > buffer.size()) {
         throw std::invalid_argument("Packet length is too big");
     }
 
     if (bytes_recieved < sizeof(struct ethhdr)) {
-        return; // skip invalid packets
+        return std::nullopt; // skip invalid packets
     }
 
     /* buf[0..13]: Ethernet header
@@ -27,32 +27,32 @@ void PacketDecoder::DecodePackets(const std::array<uint8_t, 65536>& buffer, size
         buffer.begin() + bytes_recieved
     );
 
-    HandlePacketType(eth, payload);
+    return HandlePacketType(eth, payload);
 }
 
-void PacketDecoder::HandlePacketType(const struct ethhdr& eth, const std::vector<uint8_t>& payload) {
-    // ETH_P_IP
-    // ETH_P_ARP
-    // ETH_P_IPV6
+std::optional<CapturedPacket> PacketDecoder::HandlePacketType(const struct ethhdr& eth, const std::vector<uint8_t>& payload) {
+    CapturedPacket captured_packet;
+    EthernetLayer eth_packet(eth.h_source, eth.h_dest, eth.h_proto, payload);
+    captured_packet.AddLayer(std::make_unique<EthernetLayer>(eth_packet));
+
     switch (ntohs(eth.h_proto)) {
-        case ETH_P_IP: {
-            // Handle IPV4 packet!
+        case ETH_P_IP: { // IPV4
             if (payload.size() < 20) {
                 break;
             }
-            IPv4Layer packet(payload);
-            packet.PrintInformation(std::cout);
+            
+            IPv4Layer ipv4_packet(payload);
+            captured_packet.AddLayer(std::make_unique<IPv4Layer>(ipv4_packet));
             break;
         }
         
-        case ETH_P_IPV6: {
-            // Handle IPV6 packet!
+        case ETH_P_IPV6: { // IPV6
             break;
         }
 
-        case ETH_P_ARP: {
-            // Handle ARP packet!
+        case ETH_P_ARP: { // ARP
             break;
         }
     }
+    return captured_packet;
 }
