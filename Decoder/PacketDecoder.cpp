@@ -61,14 +61,10 @@ std::optional<CapturedPacket> PacketDecoder::HandlePacketType(const struct ethhd
             uint16_t total_length = ipv4_packet.GetTotalPacketLength();
             uint8_t protocol = ipv4_packet.GetProtocol();
 
-            if (header_length < 20 || total_length < header_length || total_length > payload.size()) {
-                break;
-            }
-
             if (protocol == IPPROTO_UDP) {
                 std::vector<uint8_t> udp_payload(
                     payload.begin() + header_length,
-                    payload.end()
+                    payload.begin() + total_length
                 );
     
                 UdpLayer udp_packet(udp_payload);

@@ -10,12 +10,16 @@ class UdpLayer : public Packet {
         UdpLayer(const std::vector<uint8_t>& payload);
         virtual void PrintInformation(std::ostream& os) const override;
 
-        uint16_t GetSourcePort();
-        uint16_t GetDestinationPort();
-        uint16_t GetTotalLength();
+        uint16_t GetSourcePort() const;
+        uint16_t GetDestinationPort() const;
+        uint16_t GetTotalLength() const;
+        uint16_t GetChecksum() const;
+        std::vector<uint8_t> GetData() const;
     
     private:
         uint16_t source_port;
         uint16_t destination_port;
         uint16_t total_length;
+        uint16_t checksum;
+        std::vector<uint8_t> data;
 };
