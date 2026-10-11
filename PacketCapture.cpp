@@ -1,7 +1,25 @@
 #include "PacketCapture.h"
 #include "PacketDecoder.h"
 
-PacketCapture::PacketCapture(const std::string& interface) : interface(interface), is_capturing(false) {};
+// Linux networking
+#include <sys/socket.h>
+#include <linux/if_packet.h>
+#include <net/ethernet.h>
+#include <net/if.h>
+#include <arpa/inet.h>
+#include <sys/time.h>
+#include <unistd.h>
+
+// C++
+#include <array>
+#include <cstdint>
+#include <optional>
+#include <iostream>
+#include <system_error>
+#include <cerrno>
+#include <utility>
+
+PacketCapture::PacketCapture(const std::string& interface) : interface(interface), is_capturing(false), sock_fd(-1) {};
 
 PacketCapture::~PacketCapture() {
     StopCapture();

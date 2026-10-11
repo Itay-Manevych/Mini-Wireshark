@@ -1,12 +1,12 @@
 #pragma once
 
+#include "CapturedPacket.h"
+
 #include <array>
 #include <vector>
 #include <optional>
 #include <cstdint>
 #include <cstddef>
-
-#include "CapturedPacket.h"
 
 struct ethhdr;
 

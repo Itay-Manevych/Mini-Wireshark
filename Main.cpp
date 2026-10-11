@@ -1,5 +1,3 @@
-#include <iostream>
-#include <thread>
 #include "PacketCapture.h"
 
 int main() {

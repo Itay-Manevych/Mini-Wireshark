@@ -3,8 +3,11 @@
 #include "EthernetLayer.h"
 #include "IPv4Layer.h"
 
+// Linux networking
 #include <net/ethernet.h>
 #include <arpa/inet.h>
+
+// C++
 #include <cstring>
 #include <memory>
 #include <stdexcept>
