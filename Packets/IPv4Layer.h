@@ -9,6 +9,7 @@ class IPv4Layer : public Packet {
     public:
         IPv4Layer(const std::vector<uint8_t>& payload);
         virtual void PrintInformation(std::ostream& os) const override;
+        
     private:
         uint32_t source;
         uint32_t destination;

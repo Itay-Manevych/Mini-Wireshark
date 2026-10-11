@@ -1,7 +1,7 @@
 #include "PacketDecoder.h"
 
-#include "EthernetLayer.h"
-#include "IPv4Layer.h"
+#include "Packets/EthernetLayer.h"
+#include "Packets/IPv4Layer.h"
 
 // Linux networking
 #include <net/ethernet.h>

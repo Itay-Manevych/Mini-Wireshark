@@ -1,5 +1,5 @@
 #include "PacketCapture.h"
-#include "PacketDecoder.h"
+#include "Decoder/PacketDecoder.h"
 
 // Linux networking
 #include <sys/socket.h>

@@ -1,6 +1,6 @@
 #pragma once
 
-#include "CapturedPacket.h"
+#include "Packets/CapturedPacket.h"
 
 #include <string>
 #include <atomic>

@@ -1,4 +1,4 @@
-#include "PacketCapture.h"
+#include "Capture/PacketCapture.h"
 
 int main() {
     PacketCapture packet("eth0", std::cout);
