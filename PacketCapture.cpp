@@ -19,7 +19,7 @@
 #include <cerrno>
 #include <utility>
 
-PacketCapture::PacketCapture(const std::string& interface) : interface(interface), is_capturing(false), sock_fd(-1) {};
+PacketCapture::PacketCapture(const std::string& interface, std::ostream& os) : interface(interface), os(os), is_capturing(false), sock_fd(-1) {};
 
 PacketCapture::~PacketCapture() {
     StopCapture();
@@ -43,6 +43,7 @@ int PacketCapture::CreateAndBindSocket() {
     unsigned int index = if_nametoindex(this->interface.c_str()); // interface's index (each interface has an identifiable index)
     if (index == 0) {
         close(sock_fd);
+        sock_fd = -1;
 
         throw std::system_error(
             errno, 
@@ -61,6 +62,7 @@ int PacketCapture::CreateAndBindSocket() {
     int res = bind(sock_fd, reinterpret_cast<struct sockaddr *>(&bind_addr), sizeof(bind_addr));
     if (res == -1) {
         close(sock_fd);
+        sock_fd = -1;
 
         throw std::system_error(
             errno, 
@@ -121,7 +123,7 @@ void PacketCapture::RecievePackets() {
             }
 
             if (errno == EAGAIN || errno == EWOULDBLOCK) {
-                std::cout << "No packets received for 30 seconds. Stopping capture." << std::endl;
+                os << "No packets received for 30 seconds. Stopping capture." << std::endl;
                 is_capturing = false;
                 break;
             }
@@ -140,7 +142,7 @@ void PacketCapture::RecievePackets() {
         std::optional<CapturedPacket> captured_packet = PacketDecoder::DecodePackets(buffer, static_cast<size_t>(bytes_recieved));
         if (captured_packet.has_value()) {
             captured_packets.push_back(std::move(*captured_packet));
-            captured_packets.back().PrintInformation(std::cout);
+            captured_packets.back().PrintInformation(os);
         }
     }
 }
@@ -150,16 +152,22 @@ void PacketCapture::StartCapture() {
 
     is_capturing = true;
 
-    std::cout << "Succesfully started packet capturing" << std::endl;
+    os << "Succesfully started packet capturing" << std::endl;
 
     capture_thread = std::thread([this] () {
-        RecievePackets();
+        try {
+            RecievePackets();
+        }
+        catch(const std::exception& e) {
+            os << "Packet capture failed! Error: " << e.what() << std::endl;
+            StopCapture();
+        }
     });
 }
 
 void PacketCapture::StopCapture() {
     if (is_capturing) {
-        std::cout << "Stopping capture..." << std::endl;
+        os << "Stopping capture..." << std::endl;
     }
 
     is_capturing = false;

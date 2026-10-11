@@ -6,11 +6,11 @@
 #include <atomic>
 #include <thread>
 #include <vector>
-
+#include <iostream>
 
 class PacketCapture {
     public:
-        PacketCapture(const std::string& interface);
+        PacketCapture(const std::string& interface, std::ostream& os);
         ~PacketCapture();
         void StartCapture();
         void StopCapture();
@@ -21,6 +21,7 @@ class PacketCapture {
         std::atomic<bool> is_capturing;
         std::thread capture_thread;
         std::vector<CapturedPacket> captured_packets;
+        std::ostream& os;
 
         int CreateAndBindSocket();
         void RecievePackets();

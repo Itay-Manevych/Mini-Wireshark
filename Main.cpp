@@ -1,7 +1,7 @@
 #include "PacketCapture.h"
 
 int main() {
-    PacketCapture packet("eth0");
+    PacketCapture packet("eth0", std::cout);
 
     packet.StartCapture();
 
