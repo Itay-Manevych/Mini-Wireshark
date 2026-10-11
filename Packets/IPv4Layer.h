@@ -8,8 +8,20 @@
 class IPv4Layer : public Packet {
     public:
         IPv4Layer(const std::vector<uint8_t>& payload);
+
         virtual void PrintInformation(std::ostream& os) const override;
         
+        uint32_t GetSource() const;
+        uint32_t GetDestination() const;
+
+        uint16_t GetTotalPacketLength() const;
+        uint16_t GetIdentification() const;
+        uint16_t GetFragmentation() const;
+
+        uint8_t GetTTL() const;
+        uint8_t GetProtocol() const;
+        uint8_t GetHeaderLength() const;
+
     private:
         uint32_t source;
         uint32_t destination;

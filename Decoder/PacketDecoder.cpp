@@ -2,6 +2,7 @@
 
 #include "Packets/EthernetLayer.h"
 #include "Packets/IPv4Layer.h"
+#include "Packets/UdpLayer.h"
 
 // Linux networking
 #include <net/ethernet.h>
@@ -55,6 +56,25 @@ std::optional<CapturedPacket> PacketDecoder::HandlePacketType(const struct ethhd
             
             IPv4Layer ipv4_packet(payload);
             captured_packet.AddLayer(std::make_unique<IPv4Layer>(ipv4_packet));
+
+            uint8_t header_length = ipv4_packet.GetHeaderLength() * 4;
+            uint16_t total_length = ipv4_packet.GetTotalPacketLength();
+            uint8_t protocol = ipv4_packet.GetProtocol();
+
+            if (header_length < 20 || total_length < header_length || total_length > payload.size()) {
+                break;
+            }
+
+            if (protocol == IPPROTO_UDP) {
+                std::vector<uint8_t> udp_payload(
+                    payload.begin() + header_length,
+                    payload.end()
+                );
+    
+                UdpLayer udp_packet(udp_payload);
+                captured_packet.AddLayer(std::make_unique<UdpLayer>(udp_packet));
+            }
+
             break;
         }
         

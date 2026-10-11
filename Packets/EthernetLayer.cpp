@@ -15,9 +15,7 @@ EthernetLayer::EthernetLayer(const uint8_t* source, const uint8_t* destination, 
 void EthernetLayer::PrintInformation(std::ostream& os) const {
     os << std::hex << std::setfill('0');
 
-    os << std::endl << "------------------------------------" << std::endl;
-    os << "Ethernet Header" << std::endl;
-    os << "Source: ";
+    os << "Ethernet Header ";
 
     for (int i = 0; i < source.size(); i++) {
         os << std::hex << std::setw(2) << static_cast<int>(source[i]);
@@ -27,8 +25,7 @@ void EthernetLayer::PrintInformation(std::ostream& os) const {
         }
     }
 
-    os << std::endl;
-    os << "Destination: ";
+    os << " -> ";
 
     for (int i = 0; i < destination.size(); i++) {
         os << std::hex << std::setw(2) << static_cast<int>(destination[i]);
@@ -37,20 +34,4 @@ void EthernetLayer::PrintInformation(std::ostream& os) const {
             os << ":";
         }
     }
-
-    os << std::endl;
-
-    os << "Next Protocol:";
-    if (ntohs(next_protocol) == ETH_P_IP) {
-        os << " IPV4 ";
-    }
-    if (ntohs(next_protocol) == ETH_P_ARP) {
-        os << " ARP ";
-    }
-    if (ntohs(next_protocol) == ETH_P_IPV6) {
-        os << " IPV6 ";
-    }
-    os << "(0x" << std::hex << std::setw(4) << ntohs(next_protocol) << ")" << std::endl;
-
-    os << "------------------------------------" << std::endl << std::endl;
 }

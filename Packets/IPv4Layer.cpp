@@ -50,18 +50,6 @@ IPv4Layer::IPv4Layer(const std::vector<uint8_t>& payload) {
 }
 
 void IPv4Layer::PrintInformation(std::ostream& os) const {
-    os << "----------------------------------" << std::endl;
-    os << "IPV4 HEADER" << std::endl;
-
-    os << "IHL: " << static_cast<int>(header_length) << " bytes" << std::endl;
-    os << "Total Length: " << total_length << " bytes" << std::endl;
-
-    os << "Identification: " << identification << std::endl;
-    os << "Fragmentation: "  << fragmenetation << std::endl;
-
-    os << "TTL: " << static_cast<int>(ttl) << std::endl;
-    os << "Protocol: " << static_cast<int>(protocol) << std::endl;
-
     auto PrintIP = [&os](uint32_t ip) {
         os << (ip >> 24 & 0xFF) << "."
         << (ip >> 16 & 0xFF) << "."
@@ -69,13 +57,42 @@ void IPv4Layer::PrintInformation(std::ostream& os) const {
         << (ip & 0xFF);
     };
 
-    os << "Source: ";
+    os << std::dec;
+    os << "IPV4 ";
+
     PrintIP(source);
-    os << std::endl;
-
-    os << "Destination: ";
+    os << " -> ";
     PrintIP(destination);
-    os << std::endl;
+}
 
-    os << "----------------------------------" << std::endl;
+uint32_t IPv4Layer::GetSource() const {
+    return source;
+}
+
+uint32_t IPv4Layer::GetDestination() const {
+    return destination;
+}
+
+uint16_t IPv4Layer::GetTotalPacketLength() const {
+    return total_length;
+}
+
+uint16_t IPv4Layer::GetIdentification() const {
+    return identification;
+}
+
+uint16_t IPv4Layer::GetFragmentation() const {
+    return fragmenetation;
+}
+
+uint8_t IPv4Layer::GetTTL() const {
+    return ttl;
+}
+
+uint8_t IPv4Layer::GetProtocol() const {
+    return protocol;
+}
+
+uint8_t IPv4Layer::GetHeaderLength() const {
+    return header_length;
 }
