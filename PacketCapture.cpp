@@ -160,7 +160,7 @@ void PacketCapture::StartCapture() {
         }
         catch(const std::exception& e) {
             os << "Packet capture failed! Error: " << e.what() << std::endl;
-            StopCapture();
+            is_capturing = false;
         }
     });
 }
