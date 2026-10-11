@@ -1,6 +1,5 @@
 #include "IPv4Layer.h"
 
-
 /*
                           IPv4 HEADER FORMAT
 
@@ -28,7 +27,6 @@ Bits 0               8               16              24              32
  Minimum IPv4 header = 20 bytes.
  Maximum IPv4 header = 60 bytes.
 */
-
 
 IPv4Layer::IPv4Layer(const std::vector<uint8_t>& payload) {
     header_length = payload[0] & 0x0F;

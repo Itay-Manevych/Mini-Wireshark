@@ -1,8 +1,9 @@
 #pragma once
+
 #include "Packet.h"
-#include <cstdint>
+
 #include <vector>
-#include <iomanip>
+#include <cstdint>
 
 class IPv4Layer : public Packet {
     public:
