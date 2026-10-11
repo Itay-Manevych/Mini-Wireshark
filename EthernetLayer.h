@@ -1,15 +1,15 @@
 #pragma once
-#include "Packet.h"
-#include <linux/if_packet.h>
-#include <net/ethernet.h>
-#include <arpa/inet.h>
-#include <cstdint>
-#include <cstring>
-#include <vector>
-#include <array>
-#include <iostream>
-#include <iomanip>
 
+#include "Packet.h"
+
+// Linux networking
+#include <net/ethernet.h>
+
+// C++
+#include <cstdint>
+#include <array>
+#include <vector>
+#include <ostream>
 
 class EthernetLayer : public Packet {
     public:
