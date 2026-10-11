@@ -27,13 +27,7 @@ void PacketDecoder::DecodePackets(const std::array<uint8_t, 65536>& buffer, size
         buffer.begin() + bytes_recieved
     );
 
-    std::cout << "INFORMATION PAYLOAD: ";
-    for (const auto& byte : payload) {
-        std::cout << std::hex << std::setw(2) << static_cast<int>(byte) << " ";
-    }
-
-    std::cout << std::endl;
-
+    HandlePacketType(eth, payload);
 }
 
 void PacketDecoder::HandlePacketType(const struct ethhdr& eth, const std::vector<uint8_t>& payload) {
@@ -43,6 +37,11 @@ void PacketDecoder::HandlePacketType(const struct ethhdr& eth, const std::vector
     switch (ntohs(eth.h_proto)) {
         case ETH_P_IP: {
             // Handle IPV4 packet!
+            if (payload.size() < 20) {
+                break;
+            }
+            IPv4Layer packet(payload);
+            packet.PrintInformation(std::cout);
             break;
         }
         

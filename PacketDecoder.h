@@ -13,10 +13,11 @@
 #include <iomanip>
 #include <stdexcept>
 #include "EthernetLayer.h"
+#include "IPv4Layer.h"
 
 class PacketDecoder {
     public:
         static void DecodePackets(const std::array<uint8_t, 65536>& buffer, size_t bytes_recieved);
     private:
-        void HandlePacketType(const struct ethhdr& eth, const std::vector<uint8_t>& payload);
+        static void HandlePacketType(const struct ethhdr& eth, const std::vector<uint8_t>& payload);
 };
