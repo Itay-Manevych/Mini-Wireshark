@@ -1,5 +1,14 @@
 #include "PacketDecoder.h"
 
+#include "EthernetLayer.h"
+#include "IPv4Layer.h"
+
+#include <net/ethernet.h>
+#include <arpa/inet.h>
+#include <cstring>
+#include <memory>
+#include <stdexcept>
+
 std::optional<CapturedPacket> PacketDecoder::DecodePackets(const std::array<uint8_t, 65536>& buffer, size_t bytes_recieved) {
     if (bytes_recieved > buffer.size()) {
         throw std::invalid_argument("Packet length is too big");
