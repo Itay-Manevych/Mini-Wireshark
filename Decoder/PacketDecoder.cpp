@@ -58,13 +58,13 @@ std::optional<CapturedPacket> PacketDecoder::HandlePacketType(const struct ethhd
             IPv4Layer ipv4_packet(payload);
             captured_packet.AddLayer(std::make_unique<IPv4Layer>(ipv4_packet));
 
-            uint8_t header_length = ipv4_packet.GetHeaderLength();
-            uint16_t total_length = ipv4_packet.GetTotalPacketLength();
+            uint8_t ipv4_header_length = ipv4_packet.GetHeaderLength();
+            uint16_t ipv4_total_length = ipv4_packet.GetTotalPacketLength();
             uint8_t protocol = ipv4_packet.GetProtocol();
 
             std::vector<uint8_t> transport_payload(
-                payload.begin() + header_length,
-                payload.begin() + total_length
+                payload.begin() + ipv4_header_length,
+                payload.begin() + ipv4_total_length
             );
             
             if (protocol == IPPROTO_UDP) {
@@ -72,7 +72,7 @@ std::optional<CapturedPacket> PacketDecoder::HandlePacketType(const struct ethhd
             }
 
             if (protocol == IPPROTO_TCP) {
-                captured_packet.AddLayer(std::make_unique<TcpLayer>(transport_payload, total_length)); // tcp header doesnt have total length field
+                captured_packet.AddLayer(std::make_unique<TcpLayer>(transport_payload));
             }
 
             break;

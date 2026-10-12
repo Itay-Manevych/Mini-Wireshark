@@ -1,6 +1,6 @@
 #include "TcpLayer.h"
 
-TcpLayer::TcpLayer(const std::vector<uint8_t>& payload, uint16_t total_length) {
+TcpLayer::TcpLayer(const std::vector<uint8_t>& payload) {
     if (payload.size() < 20) {
         throw std::invalid_argument("Invalid TCP header");
     }
@@ -22,7 +22,7 @@ TcpLayer::TcpLayer(const std::vector<uint8_t>& payload, uint16_t total_length) {
 
     data.assign(
         payload.begin() + header_length,
-        payload.begin() + total_length
+        payload.end()
     );
 }
 

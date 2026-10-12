@@ -7,7 +7,7 @@
 
 class TcpLayer : public Packet {
     public:
-        TcpLayer(const std::vector<uint8_t>& payload, uint16_t total_length);
+        TcpLayer(const std::vector<uint8_t>& payload);
 
         virtual void PrintInformation(std::ostream& os) const override;
 
