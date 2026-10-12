@@ -19,6 +19,9 @@ class TcpLayer : public Packet {
         uint32_t ack_number;
 
         uint8_t header_length;
+        uint8_t flags;
 
         std::vector<uint8_t> data;
+
+        std::string GetFlagsAsText() const;
 };
