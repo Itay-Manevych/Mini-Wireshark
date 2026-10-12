@@ -20,6 +20,10 @@ TcpLayer::TcpLayer(const std::vector<uint8_t>& payload) {
     
     header_length = (payload[12] >> 4) * 4;
 
+    if (header_length < 20 || header_length > 60 || header_length > payload.size()) {
+        throw std::invalid_argument("Invalid TCP header length");
+    }
+
     data.assign(
         payload.begin() + header_length,
         payload.end()
