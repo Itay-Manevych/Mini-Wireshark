@@ -41,9 +41,9 @@ IPv4Layer::IPv4Layer(const std::vector<uint8_t>& payload) {
 
     header_length = ihl * 4;
 
-    total_length = (static_cast<uint16_t>(payload[2]) << 8) | payload[3];
-    identification = (static_cast<uint16_t>(payload[4]) << 8) | payload[5];
-    fragmenetation = (static_cast<uint16_t>(payload[6]) << 8) | payload[7];
+    total_length = static_cast<uint16_t>(payload[2]) << 8 | payload[3];
+    identification = static_cast<uint16_t>(payload[4]) << 8 | payload[5];
+    fragmenetation = static_cast<uint16_t>(payload[6]) << 8 | payload[7];
 
     if (total_length < header_length || total_length > payload.size()) {
         throw std::invalid_argument("Invalid IPv4 length");

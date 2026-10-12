@@ -17,9 +17,12 @@ class UdpLayer : public Packet {
         std::vector<uint8_t> GetData() const;
     
     private:
+        uint8_t header_length;
+
         uint16_t source_port;
         uint16_t destination_port;
         uint16_t total_length;
         uint16_t checksum;
+
         std::vector<uint8_t> data;
 };

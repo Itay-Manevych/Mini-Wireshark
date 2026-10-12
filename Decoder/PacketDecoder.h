@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Packets/CapturedPacket.h"
+#include "Packets/IPv4Layer.h"
 
 #include <array>
 #include <vector>

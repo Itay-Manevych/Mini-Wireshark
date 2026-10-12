@@ -142,7 +142,6 @@ void PacketCapture::RecievePackets() {
         std::optional<CapturedPacket> captured_packet = PacketDecoder::DecodePackets(buffer, static_cast<size_t>(bytes_recieved));
         if (captured_packet.has_value()) {
             captured_packets.push_back(std::move(*captured_packet));
-
             captured_packets.back().PrintInformation(os, captured_packets.size());
         }
     }
@@ -160,7 +159,7 @@ void PacketCapture::StartCapture() {
             RecievePackets();
         }
         catch(const std::exception& e) {
-            os << "Packet capture failed! Error: " << e.what() << std::endl;
+            os << "PACKET CAPTURE FAILED! stopping capture. Error: " << e.what() << std::endl;
             is_capturing = false;
         }
     });
