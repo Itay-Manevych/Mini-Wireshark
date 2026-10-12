@@ -57,7 +57,7 @@ std::optional<CapturedPacket> PacketDecoder::HandlePacketType(const struct ethhd
             IPv4Layer ipv4_packet(payload);
             captured_packet.AddLayer(std::make_unique<IPv4Layer>(ipv4_packet));
 
-            uint8_t header_length = ipv4_packet.GetHeaderLength() * 4;
+            uint8_t header_length = ipv4_packet.GetHeaderLength();
             uint16_t total_length = ipv4_packet.GetTotalPacketLength();
             uint8_t protocol = ipv4_packet.GetProtocol();
 
